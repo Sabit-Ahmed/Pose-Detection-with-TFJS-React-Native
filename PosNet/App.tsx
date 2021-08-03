@@ -18,7 +18,7 @@
 import React from 'react';
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-react-native';
-import {ActivityIndicator, Platform, SafeAreaView, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
+import {ActivityIndicator, Dimensions, Platform, SafeAreaView, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import AsyncStorage from "@react-native-community/async-storage";
 import * as svgComponents from 'react-native-svg';
 
@@ -62,7 +62,7 @@ const inputTensorWidth = 152;
 const inputTensorHeight = 200;
 
 const AUTO_RENDER = true;
-const MODEL_ARCHITECTURE = 'ResNet50'; // ResNet50
+const MODEL_ARCHITECTURE = 'MobileNetV1'; // ResNet50
 
 const TensorCamera = cameraWithTensors(Camera);
 
@@ -90,10 +90,10 @@ class App extends React.Component<{}, AppState> {
     async loadPoseNetModel() {
         return await poseNet.load({
             architecture: MODEL_ARCHITECTURE,
-            outputStride: 32,
+            outputStride: 16,
             inputResolution: {width: inputTensorWidth, height: inputTensorHeight},
             multiplier: 1.0,
-            quantBytes: 1
+            quantBytes: 2
         });
     }
 
@@ -139,7 +139,7 @@ class App extends React.Component<{}, AppState> {
 
 
                     const cosineDistance = poseSimilarity(this.state.posStates[this.state.currentIndex], this.state.pose);
-                    console.log(cosineDistance, this.state.currentIndex)
+                    // console.log(cosineDistance, this.state.currentIndex)
                     if (cosineDistance < minThreshold) {
                         this.setState({
                             currentIndex: this.state.currentIndex + 1
@@ -209,36 +209,15 @@ class App extends React.Component<{}, AppState> {
     }
 
 
-    // readIdealFrame = async () => {
-    //     try {
-    //       AsyncStorage.getAllKeys((err, keys=[]) => {
-    //         console.log(keys)
-    //         this.setState({totalPositionCount: keys.length})
-    //         if (keys?.length != null) {
-    //           this.setState({
-    //             currentIndex: 1,
-    //           })
-    //         }
-    //         // AsyncStorage.multiGet(keys, (err, stores) => {
-    //         //   stores.map((result, i, store) => {
-    //         //     // get at each store's key/value so you can work with it
-    //         //     let key = store[i][0];
-    //         //     let value = store[i][1];
-    //
-    //         //   });
-    //         // });
-    //       });
-    //     } catch (e) {
-    //       console.log(e)
-    //     }
-    // }
+    switchCamera() {
+        let type;
 
-
-    saveIdealFrame = async () => {
-        setPositionCount = setPositionCount + 1;
-        if (this.state.pose) {
-            poseIdeals.push(this.state.pose);
+        if (this.state.cameraType === Camera.Constants.Type.front) {
+            type = Camera.Constants.Type.back;
+        } else {
+            type = Camera.Constants.Type.front;
         }
+        this.setState({cameraType: type});
     }
 
 
@@ -329,7 +308,7 @@ class App extends React.Component<{}, AppState> {
                     style={styles.camera}
                     type={this.state.cameraType}
                     zoom={0}
-                    ratio={'4:3'}
+                    // ratio={'4:3'}
                     // tensor related props
                     cameraTextureHeight={textureDims.height}
                     cameraTextureWidth={textureDims.width}
@@ -347,6 +326,17 @@ class App extends React.Component<{}, AppState> {
             <TouchableHighlight
                 style={styles.flipCameraBtn}
                 onPress={() => {
+                    this.switchCamera();
+                }}
+                underlayColor='#FFDE03'>
+                <Text style={styles.textStyle}>
+                    FLIP CAMERA
+                </Text>
+
+            </TouchableHighlight>
+            <TouchableHighlight
+                style={styles.resetBtn}
+                onPress={() => {
                     this.clearSquatCount();
                 }}
                 underlayColor='#FFDE03'>
@@ -355,26 +345,7 @@ class App extends React.Component<{}, AppState> {
                 </Text>
 
             </TouchableHighlight>
-
-            {/*<TouchableHighlight*/}
-            {/*  style={styles.idealFrameBtn}*/}
-            {/*  onPress={() => { this.saveIdealFrame(); }}*/}
-            {/*  underlayColor='#FFDE03'>*/}
-            {/*  <Text style={styles.textStyle}>*/}
-            {/*    SET EXERCISE*/}
-            {/*    </Text>*/}
-
-            {/*</TouchableHighlight>*/}
-
-            {/*<TouchableHighlight*/}
-            {/*  style={styles.idealFrameBtn}*/}
-            {/*  onPress={() => { this.readIdealFrame(); }}*/}
-            {/*  underlayColor='#FFDE03'>*/}
-            {/*  <Text style={styles.textStyle}>*/}
-            {/*    START EXERCISE*/}
-            {/*    </Text>*/}
-
-            {/*</TouchableHighlight>*/}
+            
         </View>;
 
         return (
@@ -452,6 +423,16 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     flipCameraBtn: {
+        backgroundColor: '#424242',
+        width: '98%',
+        marginHorizontal: '1%',
+        padding: 10,
+        justifyContent: 'center',
+
+        alignItems: 'center',
+        borderColor: 'blue'
+    },
+    resetBtn: {
         backgroundColor: '#424242',
         width: '98%',
         marginHorizontal: '1%',
