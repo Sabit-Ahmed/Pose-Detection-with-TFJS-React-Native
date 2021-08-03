@@ -1,5 +1,5 @@
-# RN-Pose-Detection-with-TFJS
-## Pose Detection in React-Native with TensorFlow.js!
+# Pose-Detection-with-TFJS-React-Native
+## Pose Detection in React-Native with TensorFlow.js is here!
 
 
 ## Steps
