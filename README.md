@@ -1,4 +1,6 @@
-# Pose-Detection
+# RN-Pose-Detection-with-TFJS
+## Pose Detection in React-Native with TensorFlow.js!
+
 
 ## Steps
 1. `npx create-react-native-app rn8app`
