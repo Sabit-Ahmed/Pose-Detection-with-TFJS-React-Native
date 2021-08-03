@@ -1,0 +1,12 @@
+{
+  "name": "rn8app",
+  "displayName": "rn8app",
+  "expo": {
+    "name": "rn8app",
+    "slug": "rn8app",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
